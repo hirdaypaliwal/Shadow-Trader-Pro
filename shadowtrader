@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Shadow Trader Pro - Real-Time Trading</title>
+<style>
+:root {
+  --nifty: #10b981;
+  --sensex: #3b82f6;
+  --banknifty: #8b5cf6;
+  --crypto: #f59e0b;
+  --forex: #ef4444;
+  --commodity: #ec4899;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #0f172a;
+  color: white;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+.header {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  padding: 15px 20px;
+  border-bottom: 2px solid #22c55e;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-time {
+  background: #1e293b;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+/* MAIN LAYOUT */
+.container {
+  display: grid;
+  grid-template-columns: 250px 1fr 300px;
+  gap: 15px;
+  padding: 15px;
+  height: calc(100vh - 150px);
+}
+
+/* LEFT SIDEBAR - MARKETS */
+.markets-sidebar {
+  background: #1e293b;
+  border-radius: 15px;
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.market-tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid transparent;
+}
+
+.market-tab:hover {
+  background: #2d3748;
+}
+
+.market-tab.active {
+  background: #374151;
+  border-color: var(--color);
+}
+
+.market-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: var(--color);
+}
+
+/* CENTER - CHART & TRADING */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chart-container {
+  background: #1e293b;
+  border-radius: 15px;
+  padding: 20px;
+  flex: 1;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+#chart {
+  width: 100%;
+  height: 100%;
+}
+
+/* TIMEFRAME BUTTONS */
+.timeframe-container {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.timeframe-btn {
+  padding: 8px 15px;
+  background: #0f172a;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  color: #9ca3af;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.timeframe-btn:hover {
+  background: #1e293b;
+}
+
+.timeframe-btn.active {
+  background: #22c55e;
+  color: white;
+  border-color: #22c55e;
+}
+
+.market-info {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.info-card {
+  background: #0f172a;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* RIGHT SIDEBAR - ECONOMY & PORTFOLIO */
+.right-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.economy-panel, .portfolio-panel {
+  background: #1e293b;
+  border-radius: 15px;
+  padding: 15px;
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #374151;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ECONOMY INDICATORS */
+.economy-indicators {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.indicator {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  background: #0f172a;
+  border-radius: 8px;
+}
+
+/* PORTFOLIO */
+.portfolio-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #0f172a;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+/* TRADING PANEL */
+.trading-panel {
+  background: #1e293b;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.trade-form {
+  display: grid;
+  gap: 12px;
+}
+
+.form-group {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+}
+
+.form-input {
+  background: #0f172a;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: white;
+}
+
+.trade-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.trade-btn {
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+#buyBtn { background: #10b981; color: white; }
+#sellBtn { background: #ef4444; color: white; }
+
+/* BOTTOM BAR */
+.bottom-bar {
+  background: #1e293b;
+  padding: 10px 20px;
+  border-top: 1px solid #374151;
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* NEWS TICKER */
+.news-ticker {
+  background: #1e293b;
+  padding: 8px 15px;
+  border-radius: 10px;
+  margin: 0 15px 15px;
+  overflow: hidden;
+}
+
+.ticker-content {
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker 30s linear infinite;
+}
+
+@keyframes ticker {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+/* UTILITY */
+.badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.positive { color: #10b981; }
+.negative { color: #ef4444; }
+
+.sector-list {
+  margin-top: 15px;
+}
+
+.sector-item {
+  padding: 8px 12px;
+  background: #0f172a;
+  margin-bottom: 5px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.sector-item:hover {
+  background: #1e293b;
+}
+
+.event-item {
+  padding: 10px;
+  background: #0f172a;
+  margin-bottom: 8px;
+  border-radius: 8px;
+}
+
+/* CHART CONTROLS */
+.chart-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.simulation-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.sim-btn {
+  padding: 6px 12px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.sim-btn:hover {
+  background: #2563eb;
+}
+
+/* LIVE INDICATOR */
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #10b981;
+  font-size: 12px;
+}
+
+.live-dot {
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    📈 Shadow Trader Pro
+    <span class="badge" style="background:#22c55e;color:white">REAL-TIME</span>
+  </div>
+  <div class="date-time" id="datetime">
+    Loading...
+  </div>
+</div>
+
+<!-- NEWS TICKER -->
+<div class="news-ticker">
+  <div class="ticker-content" id="newsTicker">
+    🔥 Real-time Market Simulation Active • 📊 Multiple Timeframes Available • ⚡ Live Price Updates
+  </div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="container">
+  
+  <!-- LEFT: MARKETS SELECTOR -->
+  <div class="markets-sidebar">
+    <div class="panel-title">🌍 Markets</div>
+    
+    <div class="market-tab active" style="--color:var(--nifty)" onclick="switchMarket('nifty')">
+      <div class="market-icon">🇮🇳</div>
+      <div>
+        <div>NIFTY 50</div>
+        <small id="nifty-price">₹22,000.00</small>
+      </div>
+    </div>
+    
+    <div class="market-tab" style="--color:var(--sensex)" onclick="switchMarket('sensex')">
+      <div class="market-icon">📊</div>
+      <div>
+        <div>SENSEX</div>
+        <small id="sensex-price">₹72,500.00</small>
+      </div>
+    </div>
+    
+    <div class="market-tab" style="--color:var(--banknifty)" onclick="switchMarket('banknifty')">
+      <div class="market-icon">🏦</div>
+      <div>
+        <div>BANK NIFTY</div>
+        <small id="banknifty-price">₹47,800.00</small>
+      </div>
+    </div>
+    
+    <div class="market-tab" style="--color:var(--crypto)" onclick="switchMarket('crypto')">
+      <div class="market-icon">₿</div>
+      <div>
+        <div>CRYPTO</div>
+        <small id="crypto-price">Bitcoin: $65,000</small>
+      </div>
+    </div>
+    
+    <div class="market-tab" style="--color:var(--forex)" onclick="switchMarket('forex')">
+      <div class="market-icon">💱</div>
+      <div>
+        <div>FOREX</div>
+        <small id="forex-price">USD/INR: ₹83.20</small>
+      </div>
+    </div>
+    
+    <div class="market-tab" style="--color:var(--commodity)" onclick="switchMarket('commodity')">
+      <div class="market-icon">🛢️</div>
+      <div>
+        <div>COMMODITIES</div>
+        <small id="commodity-price">Gold: ₹62,500</small>
+      </div>
+    </div>
+    
+    <div class="panel-title" style="margin-top:20px">📈 Sectors</div>
+    
+    <div class="sector-list">
+      <div class="sector-item" onclick="switchSector('IT')">💻 IT</div>
+      <div class="sector-item" onclick="switchSector('BANKING')">🏦 Banking</div>
+      <div class="sector-item" onclick="switchSector('AUTO')">🚗 Auto</div>
+      <div class="sector-item" onclick="switchSector('PHARMA')">💊 Pharma</div>
+      <div class="sector-item" onclick="switchSector('FMCG')">🛒 FMCG</div>
+      <div class="sector-item" onclick="switchSector('ENERGY')">⚡ Energy</div>
+    </div>
+  </div>
+  
+  <!-- CENTER: CHART & TRADING -->
+  <div class="main-content">
+    
+    <!-- CHART CONTROLS -->
+    <div class="chart-controls">
+      <div class="timeframe-container">
+        <button class="timeframe-btn active" onclick="changeTimeframe('1m')">1m</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('5m')">5m</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('15m')">15m</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('30m')">30m</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('1h')">1h</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('4h')">4h</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('1d')">1d</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('1w')">1w</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('1M')">1M</button>
+        <button class="timeframe-btn" onclick="changeTimeframe('1y')">1Y</button>
+      </div>
+      
+      <div class="simulation-controls">
+        <div class="live-indicator">
+          <div class="live-dot"></div>
+          <span>LIVE</span>
+        </div>
+        <button class="sim-btn" onclick="toggleSimulation()" id="simToggle">⏸️ Pause</button>
+        <button class="sim-btn" onclick="speedUp()">⏩ 2x</button>
+        <button class="sim-btn" onclick="resetSimulation()">🔄 Reset</button>
+      </div>
+    </div>
+    
+    <!-- MARKET INFO -->
+    <div class="market-info">
+      <div class="info-card">
+        <div>Current Price</div>
+        <div id="currentPrice" class="positive">₹22,000.00</div>
+      </div>
+      <div class="info-card">
+        <div>Today's Change</div>
+        <div id="dailyChange" class="positive">+1.25%</div>
+      </div>
+      <div class="info-card">
+        <div>Day Range</div>
+        <div id="dayRange">₹21,800-22,200</div>
+      </div>
+      <div class="info-card">
+        <div>Volume</div>
+        <div id="volume">2.5M</div>
+      </div>
+    </div>
+    
+    <!-- CHART -->
+    <div class="chart-container">
+      <div id="chart">
+        <!-- Chart will be drawn here -->
+      </div>
+    </div>
+    
+    <!-- TRADING PANEL -->
+    <div class="trading-panel">
+      <div class="panel-title">
+        🎯 Trading Terminal
+        <span id="selectedMarket">NIFTY 50</span>
+      </div>
+      
+      <div class="trade-form">
+        <div class="form-group">
+          <label>Order Type:</label>
+          <select class="form-input" id="orderType">
+            <option value="market">Market Order</option>
+            <option value="limit">Limit Order</option>
+            <option value="stop">Stop Loss</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Quantity:</label>
+          <input type="number" class="form-input" id="quantity" value="10" min="1">
+        </div>
+        
+        <div class="form-group" id="priceGroup" style="display:none">
+          <label>Price:</label>
+          <input type="number" class="form-input" id="limitPrice" placeholder="Enter price">
+        </div>
+        
+        <div class="form-group">
+          <label>Total Value:</label>
+          <input type="text" class="form-input" id="totalValue" value="₹0.00" readonly>
+        </div>
+        
+        <div class="trade-buttons">
+          <button class="trade-btn" id="buyBtn" onclick="placeOrder('buy')">
+            🟢 BUY
+          </button>
+          <button class="trade-btn" id="sellBtn" onclick="placeOrder('sell')">
+            🔴 SELL
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- RIGHT: ECONOMY & PORTFOLIO -->
+  <div class="right-sidebar">
+    
+    <!-- ECONOMY PANEL -->
+    <div class="economy-panel">
+      <div class="panel-title">
+        🏛️ Virtual Economy
+        <button onclick="showEconomyModal()" style="background:#3b82f6;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer">
+          Adjust
+        </button>
+      </div>
+      
+      <div class="economy-indicators">
+        <div class="indicator">
+          <span>GDP Growth</span>
+          <span id="gdpGrowth" class="positive">6.8%</span>
+        </div>
+        <div class="indicator">
+          <span>Inflation Rate</span>
+          <span id="inflation" class="negative">4.5%</span>
+        </div>
+        <div class="indicator">
+          <span>Interest Rate</span>
+          <span id="interestRate">6.5%</span>
+        </div>
+        <div class="indicator">
+          <span>Market Sentiment</span>
+          <span id="sentiment" class="positive">Bullish</span>
+        </div>
+        <div class="indicator">
+          <span>Tax Rate</span>
+          <span id="taxRate">15%</span>
+        </div>
+        <div class="indicator">
+          <span>Brokerage Fee</span>
+          <span id="brokerage">0.1%</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- PORTFOLIO PANEL -->
+    <div class="portfolio-panel">
+      <div class="panel-title">
+        💼 Portfolio
+        <span id="portfolioValue">₹100,000.00</span>
+      </div>
+      
+      <div id="portfolioItems">
+        <!-- Portfolio items will be added here -->
+      </div>
+      
+      <div style="margin-top:15px;padding-top:15px;border-top:1px solid #374151">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span>Cash Balance:</span>
+          <span id="cashBalance" class="positive">₹100,000.00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span>Invested Value:</span>
+          <span id="investedValue">₹0.00</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-weight:bold">
+          <span>Total P/L:</span>
+          <span id="totalPL">₹0.00</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- ORDER BOOK -->
+    <div class="economy-panel">
+      <div class="panel-title">📋 Order Book</div>
+      <div id="orderBook">
+        <div style="text-align:center;color:#9ca3af;padding:20px">
+          No active orders
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM STATS BAR -->
+<div class="bottom-bar">
+  <div class="stat">
+    <span>Net Worth:</span>
+    <span id="netWorth" class="positive">₹100,000.00</span>
+  </div>
+  <div class="stat">
+    <span>Daily P/L:</span>
+    <span id="dailyPL">₹0.00</span>
+  </div>
+  <div class="stat">
+    <span>Win Rate:</span>
+    <span id="winRate">0%</span>
+  </div>
+  <div class="stat">
+    <span>Active Trades:</span>
+    <span id="activeTrades">0</span>
+  </div>
+  <div class="stat">
+    <span>Simulation Speed:</span>
+    <span id="simSpeed">1x</span>
+  </div>
+</div>
+
+<script>
+// ========== GLOBAL VARIABLES ==========
+let currentMarket = 'nifty';
+let currentTimeframe = '1m';
+let simulationActive = true;
+let simulationSpeed = 1;
+let simulationInterval;
+let lastUpdateTime = Date.now();
+let priceHistory = [];
+let currentDate = new Date();
+let cash = 100000;
+let portfolio = {};
+let economy = {
+  gdpGrowth: 6.8,
+  inflation: 4.5,
+  interestRate: 6.5,
+  unemployment: 7.2,
+  sentiment: 'bullish',
+  taxRate: 15,
+  brokerage: 0.1
+};
+
+let marketData = {
+  nifty: { 
+    price: 22000, 
+    change: 1.25, 
+    basePrice: 22000,
+    volatility: 0.02,
+    history: []
+  },
+  sensex: { price: 72500, change: 1.10, basePrice: 72500, volatility: 0.018 },
+  banknifty: { price: 47800, change: 1.50, basePrice: 47800, volatility: 0.025 },
+  crypto: { price: 65000, change: 2.50, basePrice: 65000, volatility: 0.05 },
+  forex: { price: 83.20, change: -0.15, basePrice: 83.20, volatility: 0.008 },
+  commodity: { price: 62500, change: 0.80, basePrice: 62500, volatility: 0.015 }
+};
+
+let trades = [];
+let pendingOrders = [];
+let chartData = [];
+let chartCanvas = null;
+let chartCtx = null;
+
+// ========== TIMEFRAME DATA GENERATION ==========
+const timeframeIntervals = {
+  '1m': 60000,    // 1 minute in milliseconds
+  '5m': 300000,   // 5 minutes
+  '15m': 900000,  // 15 minutes
+  '30m': 1800000, // 30 minutes
+  '1h': 3600000,  // 1 hour
+  '4h': 14400000, // 4 hours
+  '1d': 86400000, // 1 day
+  '1w': 604800000, // 1 week
+  '1M': 2592000000, // 30 days approx
+  '1y': 31536000000 // 1 year
+};
+
+const candlesPerTimeframe = {
+  '1m': 100,   // 100 minutes
+  '5m': 120,   // 10 hours
+  '15m': 96,   // 24 hours
+  '30m': 48,   // 24 hours
+  '1h': 24,    // 24 hours
+  '4h': 42,    // 7 days
+  '1d': 30,    // 30 days
+  '1w': 12,    // 12 weeks
+  '1M': 24,    // 2 years
+  '1y': 60     // 60 months
+};
+
+// ========== INITIALIZATION ==========
+document.addEventListener('DOMContentLoaded', async function() {
+  console.log("Initializing Real-Time Trading Simulator...");
+  
+  // Initialize components
+  initializeDateTime();
+  initializeMarkets();
+  generateInitialChartData();
+  initializeChart();
+  updatePortfolio();
+  
+  // Setup event listeners
+  setupEventListeners();
+  
+  // Start simulation
+  startSimulation();
+  
+  // Start news ticker
+  updateNewsTicker();
+  
+  console.log("Simulator started with timeframe:", currentTimeframe);
+});
+
+function setupEventListeners() {
+  document.getElementById('quantity').addEventListener('input', updateTotalValue);
+  document.getElementById('orderType').addEventListener('change', togglePriceInput);
+}
+
+// ========== TIMEFRAME FUNCTIONS ==========
+function changeTimeframe(tf) {
+  currentTimeframe = tf;
+  
+  // Update active button
+  document.querySelectorAll('.timeframe-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+  
+  // Regenerate chart data for new timeframe
+  generateChartDataForTimeframe();
+  
+  // Redraw chart
+  drawChart();
+  
+  // Update simulation speed based on timeframe
+  updateSimulationSpeed();
+  
+  showNotification(`📊 Timeframe changed to ${getTimeframeName(tf)}`);
+}
+
+function getTimeframeName(tf) {
+  const names = {
+    '1m': '1 Minute',
+    '5m': '5 Minutes',
+    '15m': '15 Minutes',
+    '30m': '30 Minutes',
+    '1h': '1 Hour',
+    '4h': '4 Hours',
+    '1d': 'Daily',
+    '1w': 'Weekly',
+    '1M': 'Monthly',
+    '1y': 'Yearly'
+  };
+  return names[tf] || tf;
+}
+
+function generateInitialChartData() {
+  generateChartDataForTimeframe();
+}
+
+function generateChartDataForTimeframe() {
+  const candleCount = candlesPerTimeframe[currentTimeframe] || 30;
+  chartData = [];
+  
+  let basePrice = marketData[currentMarket].basePrice;
+  const volatility = marketData[currentMarket].volatility;
+  
+  // Generate candles based on timeframe
+  for (let i = 0; i < candleCount; i++) {
+    const timestamp = new Date(Date.now() - (i * timeframeIntervals[currentTimeframe]));
+    
+    // For historical candles, generate random but realistic data
+    let open, close, high, low;
+    
+    if (i === 0) {
+      // Current/latest candle
+      open = basePrice;
+      close = marketData[currentMarket].price;
+      high = Math.max(open, close) + Math.random() * basePrice * volatility * 0.5;
+      low = Math.min(open, close) - Math.random() * basePrice * volatility * 0.5;
+    } else {
+      // Historical candles
+      open = basePrice;
+      const change = (Math.random() - 0.5) * 2 * volatility * basePrice;
+      close = open + change;
+      high = Math.max(open, close) + Math.random() * basePrice * volatility * 0.3;
+      low = Math.min(open, close) - Math.random() * basePrice * volatility * 0.3;
+      basePrice = close;
+    }
+    
+    chartData.unshift({
+      timestamp: timestamp,
+      open: open,
+      high: high,
+      low: low,
+      close: close,
+      isBullish: close >= open,
+      volume: Math.floor(Math.random() * 1000000) + 500000
+    });
+  }
+}
+
+// ========== CHART FUNCTIONS ==========
+function initializeChart() {
+  const chartContainer = document.getElementById('chart');
+  chartContainer.innerHTML = '';
+  
+  // Create canvas
+  chartCanvas = document.createElement('canvas');
+  chartCanvas.width = chartContainer.clientWidth;
+  chartCanvas.height = chartContainer.clientHeight;
+  chartContainer.appendChild(chartCanvas);
+  
+  chartCtx = chartCanvas.getContext('2d');
+  
+  // Draw initial chart
+  drawChart();
+  
+  // Handle window resize
+  window.addEventListener('resize', function() {
+    setTimeout(() => {
+      chartCanvas.width = chartContainer.clientWidth;
+      chartCanvas.height = chartContainer.clientHeight;
+      drawChart();
+    }, 100);
+  });
+}
+
+function drawChart() {
+  if (!chartCtx || chartData.length === 0) return;
+  
+  const width = chartCanvas.width;
+  const height = chartCanvas.height;
+  
+  // Clear canvas
+  chartCtx.fillStyle = '#0f172a';
+  chartCtx.fillRect(0, 0, width, height);
+  
+  // Calculate price range
+  let minPrice = Math.min(...chartData.map(d => d.low));
+  let maxPrice = Math.max(...chartData.map(d => d.high));
+  
+  // Add padding
+  const range = maxPrice - minPrice;
+  minPrice -= range * 0.1;
+  maxPrice += range * 0.1;
+  
+  const chartWidth = width - 100;
+  const chartHeight = height - 80;
+  const candleWidth = Math.min(15, chartWidth / chartData.length * 0.8);
+  const spacing = chartWidth / chartData.length * 0.2;
+  
+  // Draw grid
+  drawGrid(chartCtx, width, height, minPrice, maxPrice, chartWidth, chartHeight);
+  
+  // Draw candlesticks
+  chartData.forEach((candle, index) => {
+    const x = 60 + index * (candleWidth + spacing);
+    
+    // Calculate Y positions
+    const highY = 30 + ((maxPrice - candle.high) / (maxPrice - minPrice) * chartHeight);
+    const lowY = 30 + ((maxPrice - candle.low) / (maxPrice - minPrice) * chartHeight);
+    const openY = 30 + ((maxPrice - candle.open) / (maxPrice - minPrice) * chartHeight);
+    const closeY = 30 + ((maxPrice - candle.close) / (maxPrice - minPrice) * chartHeight);
+    
+    const color = candle.isBullish ? '#10b981' : '#ef4444';
+    
+    // Draw wick
+    chartCtx.beginPath();
+    chartCtx.moveTo(x + candleWidth/2, highY);
+    chartCtx.lineTo(x + candleWidth/2, lowY);
+    chartCtx.strokeStyle = color;
+    chartCtx.lineWidth = 2;
+    chartCtx.stroke();
+    
+    // Draw body
+    const bodyTop = Math.min(openY, closeY);
+    const bodyHeight = Math.abs(openY - closeY);
+    
+    chartCtx.fillStyle = color;
+    chartCtx.fillRect(x, bodyTop, candleWidth, Math.max(3, bodyHeight));
+    
+    // Draw border
+    chartCtx.strokeStyle = color;
+    chartCtx.lineWidth = 1;
+    chartCtx.strokeRect(x, bodyTop, candleWidth, Math.max(3, bodyHeight));
+  });
+  
+  // Draw chart info
+  drawChartInfo(chartCtx, width, height);
+}
+
+function drawGrid(ctx, width, height, minPrice, maxPrice, chartWidth, chartHeight) {
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 0.5;
+  
+  // Horizontal grid lines
+  for (let i = 0; i <= 5; i++) {
+    const y = 30 + (i * chartHeight / 5);
+    ctx.beginPath();
+    ctx.moveTo(50, y);
+    ctx.lineTo(width - 30, y);
+    ctx.stroke();
+    
+    // Price labels
+    const price = minPrice + ((5 - i) * (maxPrice - minPrice) / 5);
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'right';
+    ctx.fillText(formatCurrency(price, currentMarket), 45, y + 4);
+  }
+  
+  // Vertical grid lines (fewer to avoid clutter)
+  const visibleCandles = Math.min(20, chartData.length);
+  for (let i = 0; i <= visibleCandles; i += Math.floor(visibleCandles/5)) {
+    const x = 60 + (i * (chartWidth / visibleCandles));
+    ctx.beginPath();
+    ctx.moveTo(x, 30);
+    ctx.lineTo(x, height - 50);
+    ctx.stroke();
+  }
+}
+
+function drawChartInfo(ctx, width, height) {
+  const marketNames = {
+    nifty: 'NIFTY 50',
+    sensex: 'SENSEX',
+    banknifty: 'BANK NIFTY',
+    crypto: 'BITCOIN/USD',
+    forex: 'USD/INR',
+    commodity: 'GOLD'
+  };
+  
+  // Chart title
+  ctx.fillStyle = '#22c55e';
+  ctx.font = 'bold 16px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText(`${marketNames[currentMarket]} - ${getTimeframeName(currentTimeframe)}`, 60, 20);
+  
+  // Current price line
+  const currentPrice = marketData[currentMarket].price;
+  const minPrice = Math.min(...chartData.map(d => d.low));
+  const maxPrice = Math.max(...chartData.map(d => d.high));
+  const range = maxPrice - minPrice;
+  const paddedMin = minPrice - range * 0.1;
+  const paddedMax = maxPrice + range * 0.1;
+  const chartHeight = height - 80;
+  
+  const priceY = 30 + ((paddedMax - currentPrice) / (paddedMax - paddedMin) * chartHeight);
+  
+  ctx.strokeStyle = 'rgba(34, 197, 94, 0.5)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([5, 3]);
+  ctx.beginPath();
+  ctx.moveTo(50, priceY);
+  ctx.lineTo(width - 30, priceY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  
+  // Current price label
+  ctx.fillStyle = '#22c55e';
+  ctx.font = '12px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText(`Now: ${formatCurrency(currentPrice, currentMarket)}`, width - 150, priceY - 5);
+}
+
+// ========== SIMULATION FUNCTIONS ==========
+function startSimulation() {
+  simulationActive = true;
+  document.getElementById('simToggle').innerHTML = '⏸️ Pause';
+  
+  // Clear any existing interval
+  if (simulationInterval) clearInterval(simulationInterval);
+  
+  // Start new simulation based on current timeframe
+  const baseInterval = 1000; // 1 second base
+  const interval = baseInterval / simulationSpeed;
+  
+  simulationInterval = setInterval(() => {
+    if (simulationActive) {
+      updateMarketPrices();
+      updateChartWithNewData();
+      updatePortfolio();
+      checkPendingOrders();
+    }
+  }, interval);
+}
+
+function toggleSimulation() {
+  simulationActive = !simulationActive;
+  document.getElementById('simToggle').innerHTML = simulationActive ? '⏸️ Pause' : '▶️ Play';
+  
+  if (simulationActive) {
+    startSimulation();
+  }
+}
+
+function speedUp() {
+  simulationSpeed = simulationSpeed === 1 ? 2 : simulationSpeed === 2 ? 5 : 1;
+  document.getElementById('simSpeed').textContent = simulationSpeed + 'x';
+  
+  if (simulationActive) {
+    startSimulation(); // Restart with new speed
+  }
+}
+
+function resetSimulation() {
+  // Reset market prices to base
+  for (const market in marketData) {
+    marketData[market].price = marketData[market].basePrice;
+    marketData[market].change = 0;
+  }
+  
+  // Reset portfolio
+  cash = 100000;
+  portfolio = {};
+  trades = [];
+  pendingOrders = [];
+  
+  // Regenerate chart data
+  generateChartDataForTimeframe();
+  
+  // Update UI
+  updateMarketInfo();
+  updatePortfolio();
+  drawChart();
+  
+  showNotification('🔄 Simulation reset to initial state');
+}
+
+function updateSimulationSpeed() {
+  // Adjust speed based on timeframe
+  const speeds = {
+    '1m': 5,
+    '5m': 3,
+    '15m': 2,
+    '30m': 1.5,
+    '1h': 1,
+    '4h': 0.5,
+    '1d': 0.2,
+    '1w': 0.1,
+    '1M': 0.05,
+    '1y': 0.01
+  };
+  
+  simulationSpeed = speeds[currentTimeframe] || 1;
+  document.getElementById('simSpeed').textContent = simulationSpeed + 'x';
+  
+  if (simulationActive) {
+    startSimulation(); // Restart with new speed
+  }
+}
+
+function updateMarketPrices() {
+  const market = marketData[currentMarket];
+  const now = Date.now();
+  
+  // Calculate time since last update
+  const timeDiff = now - lastUpdateTime;
+  lastUpdateTime = now;
+  
+  // Economic impact factors
+  const gdpImpact = (economy.gdpGrowth - 5) / 10000;
+  const inflationImpact = (economy.inflation - 3) / 10000;
+  const interestImpact = (economy.interestRate - 6) / -10000;
+  
+  // Sentiment impact
+  const sentimentMultiplier = {
+    veryBullish: 1.5,
+    bullish: 1.2,
+    neutral: 1.0,
+    bearish: 0.8,
+    veryBearish: 0.5
+  }[economy.sentiment] || 1.0;
+  
+  // Calculate new price
+  let volatility = market.volatility;
+  volatility *= (1 + gdpImpact + inflationImpact + interestImpact);
+  volatility *= sentimentMultiplier;
+  
+  // Adjust volatility based on timeframe
+  const timeframeFactor = {
+    '1m': 0.1,
+    '5m': 0.2,
+    '15m': 0.3,
+    '30m': 0.4,
+    '1h': 0.5,
+    '4h': 0.6,
+    '1d': 0.8,
+    '1w': 1.0,
+    '1M': 1.2,
+    '1y': 1.5
+  }[currentTimeframe] || 0.5;
+  
+  volatility *= timeframeFactor;
+  
+  // Random movement (more realistic with Brownian motion)
+  const randomWalk = (Math.random() - 0.5) * 2 * volatility;
+  const drift = 0.0001; // Slight upward bias
+  
+  const newPrice = market.price * (1 + drift + randomWalk);
+  
+  // Update price and calculate change
+  const oldPrice = market.price;
+  market.price = newPrice;
+  market.change = ((newPrice - oldPrice) / oldPrice) * 100;
+  
+  // Update all markets (correlated movement)
+  for (const [m, data] of Object.entries(marketData)) {
+    if (m !== currentMarket) {
+      // Other markets follow with some correlation
+      const correlation = 0.7; // 70% correlation
+      const otherChange = market.change * correlation + (Math.random() - 0.5) * 2 * data.volatility;
+      data.price = data.price * (1 + otherChange/100);
+      data.change = otherChange;
+    }
+  }
+  
+  updateMarketInfo();
+}
+
+function updateChartWithNewData() {
+  const now = new Date();
+  const market = marketData[currentMarket];
+  
+  // Check if we need to create a new candle based on timeframe
+  const interval = timeframeIntervals[currentTimeframe];
+  const lastCandle = chartData[chartData.length - 1];
+  const timeSinceLastCandle = now - lastCandle.timestamp;
+  
+  if (timeSinceLastCandle >= interval) {
+    // Close current candle and start new one
+    lastCandle.close = market.price;
+    lastCandle.high = Math.max(lastCandle.high, market.price);
+    lastCandle.low = Math.min(lastCandle.low, market.price);
+    lastCandle.isBullish = lastCandle.close >= lastCandle.open;
+    
+    // Add new candle
+    chartData.push({
+      timestamp: now,
+      open: market.price,
+      high: market.price,
+      low: market.price,
+      close: market.price,
+      isBullish: true,
+      volume: Math.floor(Math.random() * 1000000) + 500000
+    });
+    
+    // Remove oldest candle if we have too many
+    const maxCandles = candlesPerTimeframe[currentTimeframe] || 30;
+    if (chartData.length > maxCandles) {
+      chartData.shift();
+    }
+  } else {
+    // Update current candle
+    lastCandle.close = market.price;
+    lastCandle.high = Math.max(lastCandle.high, market.price);
+    lastCandle.low = Math.min(lastCandle.low, market.price);
+    lastCandle.isBullish = lastCandle.close >= lastCandle.open;
+  }
+  
+  // Redraw chart
+  drawChart();
+}
+
+// ========== MARKET FUNCTIONS ==========
+function switchMarket(market) {
+  currentMarket = market;
+  
+  // Update active tab
+  document.querySelectorAll('.market-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  event.target.closest('.market-tab').classList.add('active');
+  
+  // Update market info
+  updateMarketInfo();
+  
+  // Regenerate chart data for new market
+  generateChartDataForTimeframe();
+  
+  // Redraw chart
+  drawChart();
+  
+  showNotification(`🌍 Switched to ${market.toUpperCase()} market`);
+}
+
+function updateMarketInfo() {
+  const market = marketData[currentMarket];
+  const priceElement = document.getElementById('currentPrice');
+  const changeElement = document.getElementById('dailyChange');
+  const marketNameElement = document.getElementById('selectedMarket');
+  
+  priceElement.textContent = formatCurrency(market.price, currentMarket);
+  changeElement.textContent = `${market.change >= 0 ? '+' : ''}${market.change.toFixed(2)}%`;
+  changeElement.className = market.change >= 0 ? 'positive' : 'negative';
+  
+  // Set market name
+  const marketNames = {
+    nifty: 'NIFTY 50',
+    sensex: 'SENSEX',
+    banknifty: 'BANK NIFTY',
+    crypto: 'CRYPTO',
+    forex: 'FOREX',
+    commodity: 'COMMODITIES'
+  };
+  marketNameElement.textContent = marketNames[currentMarket];
+  
+  // Update all market prices in sidebar
+  updateAllMarketPrices();
+  
+  // Update day range and volume
+  updateDayStats();
+  
+  // Update total value
+  updateTotalValue();
+}
+
+function updateAllMarketPrices() {
+  for (const [market, data] of Object.entries(marketData)) {
+    const element = document.getElementById(`${market}-price`);
+    if (element) {
+      element.textContent = formatCurrency(data.price, market);
+    }
+  }
+}
+
+function updateDayStats() {
+  const market = marketData[currentMarket];
+  const todayHigh = market.price * 1.01;
+  const todayLow = market.price * 0.99;
+  
+  document.getElementById('dayRange').textContent = 
+    `${formatCurrency(todayLow, currentMarket)}-${formatCurrency(todayHigh, currentMarket)}`;
+  
+  const volume = Math.floor(Math.random() * 5000000) + 1000000;
+  document.getElementById('volume').textContent = (volume / 1000000).toFixed(1) + 'M';
+}
+
+function formatCurrency(value, market) {
+  const symbols = {
+    nifty: '₹',
+    sensex: '₹',
+    banknifty: '₹',
+    crypto: '$',
+    forex: '₹',
+    commodity: '₹'
+  };
+  
+  const symbol = symbols[market] || '$';
+  
+  if (market === 'forex') {
+    return `${symbol}${value.toFixed(2)}`;
+  }
+  
+  if (market === 'crypto') {
+    return `${symbol}${value.toLocaleString('en-IN', { minimumFractionDigits: 0 })}`;
+  }
+  
+  return `${symbol}${value.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+// ========== TRADING FUNCTIONS ==========
+function updateTotalValue() {
+  const quantity = parseInt(document.getElementById('quantity').value) || 0;
+  const price = marketData[currentMarket].price;
+  const total = quantity * price;
+  
+  document.getElementById('totalValue').value = formatCurrency(total, currentMarket);
+}
+
+function togglePriceInput() {
+  const orderType = document.getElementById('orderType').value;
+  const priceGroup = document.getElementById('priceGroup');
+  
+  priceGroup.style.display = orderType === 'market' ? 'none' : 'grid';
+}
+
+function placeOrder(type) {
+  const quantity = parseInt(document.getElementById('quantity').value) || 0;
+  const orderType = document.getElementById('orderType').value;
+  const limitPrice = parseFloat(document.getElementById('limitPrice').value) || marketData[currentMarket].price;
+  
+  if (quantity <= 0) {
+    showNotification('❌ Please enter a valid quantity!', 'error');
+    return;
+  }
+  
+  const marketPrice = marketData[currentMarket].price;
+  
+  if (orderType === 'market') {
+    // Execute immediately
+    executeTrade(type, quantity, marketPrice);
+  } else {
+    // Add to pending orders
+    pendingOrders.push({
+      type: type,
+      market: currentMarket,
+      quantity: quantity,
+      price: limitPrice,
+      orderType: orderType,
+      timestamp: new Date()
+    });
+    
+    updateOrderBook();
+    
+    const orderTypeName = orderType === 'limit' ? 'Limit' : 'Stop';
+    showNotification(`📝 ${orderTypeName} ${type.toUpperCase()} order placed at ${formatCurrency(limitPrice, currentMarket)}`, 'info');
+  }
+}
+
+function executeTrade(type, quantity, price) {
+  const totalCost = quantity * price;
+  const brokerage = totalCost * (economy.brokerage / 100);
+  const totalWithBrokerage = totalCost + brokerage;
+  
+  if (type === 'buy') {
+    if (cash >= totalWithBrokerage) {
+      cash -= totalWithBrokerage;
+      
+      // Add to portfolio
+      if (!portfolio[currentMarket]) {
+        portfolio[currentMarket] = { quantity: 0, avgPrice: 0, totalInvested: 0 };
+      }
+      
+      const existing = portfolio[currentMarket];
+      const newQuantity = existing.quantity + quantity;
+      const newTotal = existing.totalInvested + totalCost;
+      
+      portfolio[currentMarket] = {
+        quantity: newQuantity,
+        avgPrice: newTotal / newQuantity,
+        totalInvested: newTotal
+      };
+      
+      // Record trade
+      trades.push({
+        type: 'buy',
+        market: currentMarket,
+        quantity: quantity,
+        price: price,
+        total: totalCost,
+        brokerage: brokerage,
+        timestamp: new Date()
+      });
+      
+      showNotification(`✅ Bought ${quantity} units at ${formatCurrency(price, currentMarket)}`, 'success');
+    } else {
+      showNotification(`❌ Insufficient cash! Need ${formatCurrency(totalWithBrokerage, currentMarket)}`, 'error');
+      return;
+    }
+  } else { // sell
+    if (portfolio[currentMarket] && portfolio[currentMarket].quantity >= quantity) {
+      const profit = (price - portfolio[currentMarket].avgPrice) * quantity;
+      cash += totalCost - brokerage;
+      
+      // Update portfolio
+      portfolio[currentMarket].quantity -= quantity;
+      portfolio[currentMarket].totalInvested -= portfolio[currentMarket].avgPrice * quantity;
+      
+      if (portfolio[currentMarket].quantity === 0) {
+        delete portfolio[currentMarket];
+      }
+      
+      // Record trade
+      trades.push({
+        type: 'sell',
+        market: currentMarket,
+        quantity: quantity,
+        price: price,
+        total: totalCost,
+        brokerage: brokerage,
+        profit: profit,
+        timestamp: new Date()
+      });
+      
+      const profitText = profit >= 0 ? `(Profit: ${formatCurrency(profit, currentMarket)})` : `(Loss: ${formatCurrency(-profit, currentMarket)})`;
+      showNotification(`✅ Sold ${quantity} units at ${formatCurrency(price, currentMarket)} ${profitText}`, 'success');
+    } else {
+      showNotification('❌ Insufficient holdings!', 'error');
+      return;
+    }
+  }
+  
+  updatePortfolio();
+  updateOrderBook();
+}
+
+function checkPendingOrders() {
+  const executedOrders = [];
+  const marketPrice = marketData[currentMarket].price;
+  
+  pendingOrders.forEach((order, index) => {
+    let shouldExecute = false;
+    
+    if (order.orderType === 'limit') {
+      if (order.type === 'buy' && marketPrice <= order.price) {
+        shouldExecute = true;
+      } else if (order.type === 'sell' && marketPrice >= order.price) {
+        shouldExecute = true;
+      }
+    } else if (order.orderType === 'stop') {
+      if (order.type === 'buy' && marketPrice >= order.price) {
+        shouldExecute = true;
+      } else if (order.type === 'sell' && marketPrice <= order.price) {
+        shouldExecute = true;
+      }
+    }
+    
+    if (shouldExecute) {
+      executeTrade(order.type, order.quantity, order.price);
+      executedOrders.push(index);
+    }
+  });
+  
+  // Remove executed orders
+  executedOrders.reverse().forEach(index => {
+    pendingOrders.splice(index, 1);
+  });
+  
+  if (executedOrders.length > 0) {
+    updateOrderBook();
+  }
+}
+
+function updateOrderBook() {
+  const orderBook = document.getElementById('orderBook');
+  
+  if (pendingOrders.length === 0) {
+    orderBook.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:20px">No active orders</div>';
+    return;
+  }
+  
+  let html = '';
+  pendingOrders.forEach(order => {
+    const color = order.type === 'buy' ? '#10b981' : '#ef4444';
+    const icon = order.type === 'buy' ? '🟢' : '🔴';
+    const orderType = order.orderType === 'limit' ? 'LMT' : 'STP';
+    
+    html += `
+      <div style="display:flex;justify-content:space-between;padding:8px;border-bottom:1px solid #374151">
+        <div>
+          <span style="color:${color}">${icon} ${order.type.toUpperCase()}</span>
+          <small>${order.market.toUpperCase()} ${orderType}</small>
+        </div>
+        <div>
+          <div>${formatCurrency(order.price, order.market)}</div>
+          <small>Qty: ${order.quantity}</small>
+        </div>
+      </div>
+    `;
+  });
+  
+  orderBook.innerHTML = html;
+}
+
+// ========== PORTFOLIO FUNCTIONS ==========
+function updatePortfolio() {
+  const portfolioItems = document.getElementById('portfolioItems');
+  portfolioItems.innerHTML = '';
+  
+  let totalInvested = 0;
+  let currentValue = 0;
+  
+  for (const [market, holding] of Object.entries(portfolio)) {
+    const currentPrice = marketData[market].price;
+    const marketValue = holding.quantity * currentPrice;
+    const profitLoss = marketValue - holding.totalInvested;
+    const plPercent = (profitLoss / holding.totalInvested) * 100;
+    
+    totalInvested += holding.totalInvested;
+    currentValue += marketValue;
+    
+    const item = document.createElement('div');
+    item.className = 'portfolio-item';
+    item.innerHTML = `
+      <div>
+        <div style="font-weight:bold">${market.toUpperCase()}</div>
+        <small>${holding.quantity} units @ ${formatCurrency(holding.avgPrice, market)}</small>
+      </div>
+      <div style="text-align:right">
+        <div>${formatCurrency(marketValue, market)}</div>
+        <small class="${profitLoss >= 0 ? 'positive' : 'negative'}">
+          ${profitLoss >= 0 ? '+' : ''}${profitLoss.toFixed(2)} (${plPercent.toFixed(2)}%)
+        </small>
+      </div>
+    `;
+    portfolioItems.appendChild(item);
+  }
+  
+  // Update portfolio summary
+  const netWorth = cash + currentValue;
+  const totalPL = netWorth - 100000;
+  
+  document.getElementById('portfolioValue').textContent = formatCurrency(netWorth, 'nifty');
+  document.getElementById('cashBalance').textContent = formatCurrency(cash, 'nifty');
+  document.getElementById('investedValue').textContent = formatCurrency(totalInvested, 'nifty');
+  document.getElementById('totalPL').textContent = formatCurrency(totalPL, 'nifty');
+  document.getElementById('totalPL').className = totalPL >= 0 ? 'positive' : 'negative';
+  document.getElementById('netWorth').textContent = formatCurrency(netWorth, 'nifty');
+  
+  // Calculate daily P/L
+  const dailyPL = calculateDailyPL();
+  document.getElementById('dailyPL').textContent = formatCurrency(dailyPL, 'nifty');
+  document.getElementById('dailyPL').className = dailyPL >= 0 ? 'positive' : 'negative';
+  
+  // Calculate win rate
+  const profitableTrades = trades.filter(t => t.type === 'sell' && t.profit > 0).length;
+  const winRate = trades.filter(t => t.type === 'sell').length > 0 ? 
+    (profitableTrades / trades.filter(t => t.type === 'sell').length) * 100 : 0;
+  document.getElementById('winRate').textContent = `${winRate.toFixed(1)}%`;
+  
+  document.getElementById('activeTrades').textContent = Object.keys(portfolio).length;
+}
+
+function calculateDailyPL() {
+  // Simplified daily P/L calculation
+  let dailyPL = 0;
+  const today = new Date().toDateString();
+  
+  trades.forEach(trade => {
+    if (trade.timestamp.toDateString() === today && trade.type === 'sell') {
+      dailyPL += trade.profit || 0;
+    }
+  });
+  
+  return dailyPL;
+}
+
+// ========== UTILITY FUNCTIONS ==========
+function initializeDateTime() {
+  updateDateTime();
+  setInterval(updateDateTime, 1000);
+}
+
+function updateDateTime() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('en-IN', { 
+    hour12: true,
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+  
+  const dateStr = now.toLocaleDateString('en-IN', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+  
+  document.getElementById('datetime').innerHTML = `
+    <div>${dateStr}</div>
+    <div>${timeStr}</div>
+  `;
+}
+
+function updateNewsTicker() {
+  const newsItems = [
+    "📈 Real-time market simulation active",
+    "⚡ Multiple timeframe analysis available",
+    "💹 Virtual trading with realistic price movements",
+    "📊 Technical indicators coming soon",
+    "🎯 Practice trading without risk",
+    "🚀 Perfect your trading strategy",
+    "💰 Learn risk management techniques",
+    "🏆 Compete with virtual traders"
+  ];
+  
+  let currentIndex = 0;
+  
+  setInterval(() => {
+    const ticker = document.getElementById('newsTicker');
+    const market = currentMarket.toUpperCase();
+    const price = formatCurrency(marketData[currentMarket].price, currentMarket);
+    const change = marketData[currentMarket].change >= 0 ? '↗' : '↘';
+    
+    ticker.innerHTML = `🔥 ${market}: ${price} ${change} ${Math.abs(marketData[currentMarket].change).toFixed(2)}% • ${newsItems[currentIndex]} • `;
+    
+    currentIndex = (currentIndex + 1) % newsItems.length;
+  }, 3000);
+}
+
+function showNotification(message, type = 'info') {
+  // Create notification
+  const notification = document.createElement('div');
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6'};
+    color: white;
+    border-radius: 10px;
+    z-index: 1000;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideIn 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 400px;
+  `;
+  
+  const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+  
+  notification.innerHTML = `
+    <div style="font-size:20px">${icon}</div>
+    <div>${message}</div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+function initializeMarkets() {
+  updateAllMarketPrices();
+  updateMarketInfo();
+}
+
+function switchSector(sector) {
+  showNotification(`📊 Filtering ${sector} sector stocks`);
+  // In future, can show sector-specific stocks
+}
+
+// Add CSS for animations
+const style = document.createElement('style');
+style.textContent = `
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideOut {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+`;
+document.head.appendChild(style);
+
+// Start the app
+console.log("Real-Time Trading Simulator Ready!");
+</script>
+</body>
+</html>
